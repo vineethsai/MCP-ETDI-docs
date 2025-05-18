@@ -15,6 +15,7 @@ The Enhanced Tool Definition Interface (ETDI) is a security extension to the Mod
 - [Getting Started](docs/implementation/getting-started.md) - Quick start guide for ETDI implementation
 - [OAuth Integration](docs/implementation/oauth-integration.md) - OAuth 2.0 integration details
 - [Best Practices](docs/implementation/best-practices.md) - Implementation best practices
+- [MCP Integration](docs/implementation/mcp-integration.md) - Guide for integrating ETDI with Model Context Protocol
 
 ### 3. [Development](docs/development/README.md)
 - [TypeScript SDK](docs/development/typescript-sdk.md) - TypeScript SDK documentation
@@ -24,7 +25,6 @@ The Enhanced Tool Definition Interface (ETDI) is a security extension to the Mod
 
 ### 4. [Project Management](docs/project/README.md)
 - [Implementation Tracker](docs/project/effort-tracker.md) - Project implementation status and tasks
-- [Roadmap](docs/project/roadmap.md) - Future development plans
 - [Contributing](docs/project/contributing.md) - Guidelines for contributors
 
 ## Quick Links
@@ -33,6 +33,7 @@ The Enhanced Tool Definition Interface (ETDI) is a security extension to the Mod
 - [OAuth Integration Guide](docs/implementation/oauth-integration.md)
 - [TypeScript SDK Documentation](docs/development/typescript-sdk.md)
 - [Python SDK Documentation](docs/development/python-sdk.md)
+- [MCP Integration Guide](docs/implementation/mcp-integration.md)
 - [Implementation Status](docs/project/effort-tracker.md)
 
 ## Getting Started
