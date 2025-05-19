@@ -10,6 +10,7 @@ The Enhanced Tool Definition Interface (ETDI) is a security extension to the Mod
 - [High-Level Design](docs/core/hld.md) - Overview of ETDI architecture and security model
 - [Low-Level Design](docs/core/lld.md) - Detailed technical implementation specifications
 - [Security Model](docs/core/security.md) - Security considerations and threat models
+- [Future Considerations](docs/core/future-considerations.md) - Future considerations currently out of scope
 
 ### 2. [Implementation Guide](docs/implementation/README.md)
 - [Getting Started](docs/implementation/getting-started.md) - Quick start guide for ETDI implementation
