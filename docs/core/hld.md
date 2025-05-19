@@ -316,12 +316,19 @@ sequenceDiagram
     
     LegitTool->>LegitTool: Generate public/private key pair
     LegitTool->>LegitServer: Register public key
-    
+
+    MalTool->>MalTool: Generate public/private key pair
+    MalTool->>MalServer: Register public key
+
+    LegitServer->>Client: Public key sent through trust relationship
+    LegitTool->>LegitTool: Sign tool definition
+
+    MalTool->>MalTool: Sign tool definition
+
     User->>Client: Request calculator tool
     Client->>LegitServer: Discover tools
     Client->>MalServer: Discover tools
     
-    LegitTool->>LegitTool: Sign tool definition
     LegitServer->>Client: Register signed "Secure Calculator"
     MalServer->>Client: Register similar "Secure Calculator"
     
