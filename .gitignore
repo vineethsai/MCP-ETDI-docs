@@ -1,0 +1,13 @@
+# Ignore all shell scripts used for GitHub project management
+*.sh
+
+# Specific scripts
+add_tasks_to_github.sh
+add_backlog_tasks.sh
+add_missing_tasks.sh
+close_duplicates.sh
+add_completed_py_tasks.sh
+add_cs_tasks.sh
+
+# Temporary files
+/tmp/* 

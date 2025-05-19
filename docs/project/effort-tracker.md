@@ -402,6 +402,42 @@ This document tracks the implementation of the OAuth-based Enhanced Tool Definit
 - [ ] PY-7.9: Add synchronous and asynchronous support
 - [ ] PY-7.10: Create integration tests
 
+### PY-8: Python SDK Documentation
+**Status:** 🟢 Completed  
+**Complexity:** 🟨 Medium  
+**Assignee:** _Completed_  
+**Dependencies:** CS-1, CS-2, CS-3, CS-4  
+
+#### Subtasks:
+- [x] PY-8.1: Create Python SDK overview documentation
+- [x] PY-8.2: Document ETDIClient class and methods
+- [x] PY-8.3: Document ToolProvider class and methods
+- [x] PY-8.4: Document OAuthManager class and methods
+- [x] PY-8.5: Document data types and interfaces
+- [x] PY-8.6: Create basic usage examples
+- [x] PY-8.7: Document error handling approaches
+- [x] PY-8.8: Add advanced configuration examples
+- [x] PY-8.9: Create custom provider implementation examples
+- [x] PY-8.10: Document Anthropic Claude integration
+
+### PY-9: Python MCP Integration Documentation
+**Status:** 🟢 Completed  
+**Complexity:** 🟨 Medium  
+**Assignee:** _Completed_  
+**Dependencies:** PY-8  
+
+#### Subtasks:
+- [x] PY-9.1: Document MCP integration architecture
+- [x] PY-9.2: Create extension class diagrams
+- [x] PY-9.3: Document ETDISecureClientSession implementation
+- [x] PY-9.4: Document ETDISecureServer implementation
+- [x] PY-9.5: Create implementation examples
+- [x] PY-9.6: Document server-side integration
+- [x] PY-9.7: Document client-side integration
+- [x] PY-9.8: Add Anthropic Claude integration examples
+- [x] PY-9.9: Create deployment considerations
+- [x] PY-9.10: Document security best practices
+
 ## Reference Servers Tasks
 
 ### RS-1: OAuth-Secured Filesystem Server
@@ -625,3 +661,59 @@ This document tracks the implementation of the OAuth-based Enhanced Tool Definit
 - [ ] INT-3.8: Add performance optimization tips
 - [ ] INT-3.9: Create deployment recommendations
 - [ ] INT-3.10: Document testing and validation approach
+
+## Documentation Tasks
+
+### DOC-1: TypeScript SDK Documentation
+**Status:** 🟢 Completed  
+**Complexity:** 🟨 Medium  
+**Assignee:** _Completed_  
+**Dependencies:** TS-1, TS-2, TS-3, TS-4, TS-5, TS-6, TS-7, TS-8, TS-9  
+
+#### Subtasks:
+- [x] DOC-1.1: Create TypeScript SDK overview documentation
+- [x] DOC-1.2: Document ETDIClient class and methods
+- [x] DOC-1.3: Document ToolProvider class and methods 
+- [x] DOC-1.4: Document OAuthManager class and methods
+- [x] DOC-1.5: Document data types and interfaces
+- [x] DOC-1.6: Create basic usage examples
+- [x] DOC-1.7: Document error handling approaches
+- [x] DOC-1.8: Add advanced configuration examples
+- [x] DOC-1.9: Create custom provider implementation examples
+- [x] DOC-1.10: Document integration with Anthropic Claude
+
+### DOC-2: MCP Integration Documentation
+**Status:** 🟢 Completed  
+**Complexity:** 🟨 Medium  
+**Assignee:** _Completed_  
+**Dependencies:** DOC-1, PY-8  
+
+#### Subtasks:
+- [x] DOC-2.1: Document MCP integration architecture
+- [x] DOC-2.2: Create class extension diagrams
+- [x] DOC-2.3: Document TypeScript integration approach
+- [x] DOC-2.4: Document Python integration approach
+- [x] DOC-2.5: Create implementation examples for both languages
+- [x] DOC-2.6: Document security considerations
+- [x] DOC-2.7: Add deployment recommendations
+- [x] DOC-2.8: Create performance optimization guidance
+- [x] DOC-2.9: Document Anthropic Claude integration
+- [x] DOC-2.10: Create troubleshooting guide
+
+### DOC-3: Implementation Guides
+**Status:** 🟢 Completed  
+**Complexity:** 🟨 Medium  
+**Assignee:** _Completed_  
+**Dependencies:** DOC-1, DOC-2, PY-8, PY-9  
+
+#### Subtasks:
+- [x] DOC-3.1: Create getting started guide for TypeScript
+- [x] DOC-3.2: Create getting started guide for Python
+- [x] DOC-3.3: Document OAuth integration
+- [x] DOC-3.4: Create best practices documentation
+- [x] DOC-3.5: Document security model
+- [x] DOC-3.6: Create high-level design documentation
+- [x] DOC-3.7: Create low-level design documentation
+- [x] DOC-3.8: Document API reference
+- [x] DOC-3.9: Create example applications
+- [x] DOC-3.10: Develop code examples for both languages
